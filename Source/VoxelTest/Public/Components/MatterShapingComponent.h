@@ -7,8 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "MatterShapingComponent.generated.h"
 
-struct FMatterShapingRequest
-{
+struct FMatterShapingRequest {
     FVector Location = FVector();
     float Side = 0.0f;
     TObjectPtr<AActor> MatterActor = TObjectPtr<AActor>();
@@ -24,7 +23,6 @@ class VOXELTEST_API UMatterShapingComponent : public UActorComponent {
 public:
     UMatterShapingComponent() = default;
     ~UMatterShapingComponent() override = default;
-
 
     void ShapeMatter(FMatterShapingRequest const& shapingRequest);
 

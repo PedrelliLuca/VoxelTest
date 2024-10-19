@@ -20,27 +20,27 @@ FVoxelIntBox MakeVoxelIntBox(TObjectPtr<AVoxelWorld> const& voxelW, FVector cons
         result += FVoxelUtilities::CeilToInt(localPosition);
     };
 
-    // Here is the order in which vertices are added for a given Z. 
+    // Here is the order in which vertices are added for a given Z.
     // First, the minZ side, then the maxZ one.
-    // 
-    //                 X                   
-    //                ^                    
-    //  2             |              4     
-    //    +------------------------+       
-    //    |           |            |       
-    //    |           |            |       
-    //    |           |            |       
-    //    |           |            |       
-    //    |           |            |       
-    //----|------------------------|---->  
-    //    |           |            |     Y 
-    //    |           |            |       
-    //    |           |            |       
-    //    |           |            |       
-    //    |           |            |       
-    //    +------------------------+       
-    //  1             |             3      
-    //                |                    
+    //
+    //                 X
+    //                ^
+    //  2             |              4
+    //    +------------------------+
+    //    |           |            |
+    //    |           |            |
+    //    |           |            |
+    //    |           |            |
+    //    |           |            |
+    //----|------------------------|---->
+    //    |           |            |     Y
+    //    |           |            |
+    //    |           |            |
+    //    |           |            |
+    //    |           |            |
+    //    +------------------------+
+    //  1             |             3
+    //                |
 
     transformVertex({box.Min.X, box.Min.Y, box.Min.Z});
     transformVertex({box.Max.X, box.Min.Y, box.Min.Z});

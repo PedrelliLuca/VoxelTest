@@ -7,13 +7,9 @@
 #include "VoxelTestGameMode.generated.h"
 
 UCLASS(minimalapi)
-class AVoxelTestGameMode : public AGameModeBase
-{
-	GENERATED_BODY()
+class AVoxelTestGameMode : public AGameModeBase {
+    GENERATED_BODY()
 
 public:
-	AVoxelTestGameMode();
+    AVoxelTestGameMode();
 };
-
-
-

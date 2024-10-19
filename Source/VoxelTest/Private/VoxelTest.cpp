@@ -3,5 +3,4 @@
 #include "VoxelTest.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, VoxelTest, "VoxelTest" );
- 
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, VoxelTest, "VoxelTest");
