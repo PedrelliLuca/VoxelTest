@@ -43,8 +43,14 @@ class AVoxelTestCharacter : public ACharacter {
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     UInputAction* LookAction;
 
+    /** Look Input Action */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    UInputAction* DrawAction;
+
 public:
     AVoxelTestCharacter();
+
+    void DrawCube(FInputActionValue const& Value);
 
 protected:
     /** Called for movement input */

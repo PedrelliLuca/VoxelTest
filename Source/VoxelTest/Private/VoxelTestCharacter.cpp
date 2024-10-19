@@ -54,6 +54,10 @@ AVoxelTestCharacter::AVoxelTestCharacter() {
     // are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void AVoxelTestCharacter::DrawCube(FInputActionValue const& Value) {
+   
+}
+
 void AVoxelTestCharacter::BeginPlay() {
     // Call the base class
     Super::BeginPlay();
@@ -82,6 +86,9 @@ void AVoxelTestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
         // Looking
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AVoxelTestCharacter::Look);
+
+        // Draw
+        EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AVoxelTestCharacter::DrawCube);
     } else {
         UE_LOG(LogTemplateCharacter, Error,
             TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy "
