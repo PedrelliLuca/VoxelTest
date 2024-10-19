@@ -1,0 +1,22 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{00AB6659-45FA-6740-A6B9-E4BFB99DECDF}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "VoxelTest",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ModelingToolsEditorMode",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		}
+	]
+}
