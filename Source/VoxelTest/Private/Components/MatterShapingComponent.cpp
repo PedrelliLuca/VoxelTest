@@ -2,13 +2,15 @@
 
 #include "Components/MatterShapingComponent.h"
 
+#include "VoxelTools/Gen/VoxelToolsBase.h"
+#include "VoxelTools/Impl/VoxelBoxToolsImpl.h"
 #include "VoxelTools/VoxelToolHelpers.h"
 #include "VoxelWorld.h"
 
 namespace VoxelUtilities {
 FVoxelIntBox MakeVoxelIntBox(TObjectPtr<AVoxelWorld> const& voxelW, FVector const& center, float const side) {
     VOXEL_FUNCTION_COUNTER();
-    CHECK_VOXELWORLD_IS_CREATED_IMPL(voxelW, {});
+    CHECK_VOXELWORLD_IS_CREATED_IMPL(voxelW, FVoxelIntBox{});
 
     auto const box = FBox(center - side, center + side);
 
@@ -56,12 +58,28 @@ FVoxelIntBox MakeVoxelIntBox(TObjectPtr<AVoxelWorld> const& voxelW, FVector cons
 } // namespace VoxelUtilities
 
 void UMatterShapingComponent::ShapeMatter(FMatterShapingRequest const& shapingRequest) {
-    // UVoxelBlueprintLibrary::TransformGlobalBoxToVoxelBox
-
-    TObjectPtr<AVoxelWorld> const& matterVW = Cast<AVoxelWorld>(shapingRequest.MatterActor);
-    if (!matterVW) {
+    TObjectPtr<AVoxelWorld> const& voxelWorld = Cast<AVoxelWorld>(shapingRequest.MatterActor);
+    if (!voxelWorld) {
         return;
     }
 
-    VoxelUtilities::MakeVoxelIntBox(matterVW, shapingRequest.Location, shapingRequest.Side);
+    FVoxelIntBox const shapeBound = VoxelUtilities::MakeVoxelIntBox(voxelWorld, shapingRequest.Location, shapingRequest.Side);
+
+    // From UVoxelBoxTools::AddBox():
+    // GENERATED_TOOL_FUNCTION(Value);
+    VOXEL_FUNCTION_COUNTER();
+    CHECK_VOXELWORLD_IS_CREATED_IMPL(voxelWorld.Get(), );
+
+    // GENERATED_TOOL_CALL(Value, FVoxelBoxToolsImpl::AddBox(Data, Bounds))
+    FVoxelData& worldData = voxelWorld->GetData();
+    {
+        auto const lock = FVoxelWriteScopeLock(worldData, shapeBound, FUNCTION_FNAME);
+
+        // bMultiThreaded = true, bRecordModifiedValues = true
+        auto data = TVoxelDataImpl<FModifiedVoxelValue>(worldData, true, true);
+        FVoxelBoxToolsImpl::AddBox(data, shapeBound);
+
+        // bUpdateRender = true
+        FVoxelToolHelpers::UpdateWorld(voxelWorld, shapeBound);
+    }
 }
