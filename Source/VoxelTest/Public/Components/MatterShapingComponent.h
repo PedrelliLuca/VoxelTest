@@ -16,7 +16,7 @@ struct FMatterShapingRequest {
 /**
  * \brief TODO
  */
-UCLASS()
+UCLASS(ClassGroup = (MatterShaping), meta = (BlueprintSpawnableComponent))
 class VOXELTEST_API UMatterShapingComponent : public UActorComponent {
     GENERATED_BODY()
 
@@ -27,4 +27,5 @@ public:
     void ShapeMatter(FMatterShapingRequest const& shapingRequest);
 
 private:
+
 };

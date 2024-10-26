@@ -3,6 +3,7 @@
 #include "VoxelTestCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/MatterShapingComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -55,12 +56,32 @@ AVoxelTestCharacter::AVoxelTestCharacter() {
 }
 
 void AVoxelTestCharacter::DrawCube(FInputActionValue const& Value) {
-   
+    FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), true, this);
+    RV_TraceParams.bTraceComplex = true;
+    RV_TraceParams.bReturnPhysicalMaterial = false;
+
+    // Re-initialize hit info
+    FHitResult RV_Hit(ForceInit);
+
+    // call GetWorld() from within an actor extending class
+    FVector const startRay{FollowCamera->GetComponentLocation()};
+    FVector const endRay{startRay + FollowCamera->GetForwardVector() * 3000.};
+    GetWorld()->LineTraceSingleByChannel(RV_Hit, // result
+        startRay,                                // start
+        endRay,                                  // end
+        ECC_Pawn,                                // collision channel
+        RV_TraceParams);
+
+    DrawDebugLine(GetWorld(), startRay, endRay, FColor::Red, false, 5.);
+    _matterShapingComponent->ShapeMatter({RV_Hit.ImpactPoint, 200., RV_Hit.GetActor()});
 }
 
 void AVoxelTestCharacter::BeginPlay() {
     // Call the base class
     Super::BeginPlay();
+
+    _matterShapingComponent = FindComponentByClass<UMatterShapingComponent>();
+    check(_matterShapingComponent.IsValid());
 }
 
 //////////////////////////////////////////////////////////////////////////

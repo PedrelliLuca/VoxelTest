@@ -12,6 +12,7 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+class UMatterShapingComponent;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -19,6 +20,7 @@ UCLASS(config = Game)
 class AVoxelTestCharacter : public ACharacter {
     GENERATED_BODY()
 
+private:
     /** Camera boom positioning the camera behind the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
     USpringArmComponent* CameraBoom;
@@ -46,6 +48,8 @@ class AVoxelTestCharacter : public ACharacter {
     /** Look Input Action */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     UInputAction* DrawAction;
+
+    TWeakObjectPtr<UMatterShapingComponent> _matterShapingComponent{};
 
 public:
     AVoxelTestCharacter();
