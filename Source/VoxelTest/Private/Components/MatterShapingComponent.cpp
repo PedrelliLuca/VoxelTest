@@ -4,6 +4,7 @@
 
 #include "VoxelTools/Gen/VoxelToolsBase.h"
 #include "VoxelTools/Impl/VoxelBoxToolsImpl.h"
+#include "VoxelTools/Impl/VoxelBoxToolsImpl.inl"
 #include "VoxelTools/VoxelToolHelpers.h"
 #include "VoxelWorld.h"
 
@@ -28,19 +29,19 @@ FVoxelIntBox MakeVoxelIntBox(TObjectPtr<AVoxelWorld> const& voxelW, FVector cons
     //                 X
     //                ^
     //  2             |              4
-    //    +------------------------+
-    //    |           |            |
-    //    |           |            |
-    //    |           |            |
-    //    |           |            |
-    //    |           |            |
-    //----|------------------------|---->
-    //    |           |            |     Y
-    //    |           |            |
-    //    |           |            |
-    //    |           |            |
-    //    |           |            |
-    //    +------------------------+
+    //    +-----------------------+
+    //    |           |           |
+    //    |           |           |
+    //    |           |           |
+    //    |           |           |
+    //    |           |           |
+    //----|-----------------------|---->
+    //    |           |           |     Y
+    //    |           |           |
+    //    |           |           |
+    //    |           |           |
+    //    |           |           |
+    //    +-----------------------+
     //  1             |             3
     //                |
 
