@@ -13,6 +13,12 @@ struct FMatterShapingRequest {
     TObjectPtr<AActor> MatterActor = TObjectPtr<AActor>();
 };
 
+enum class EShapingOperation : uint8
+{
+    Add = 0,
+    Remove
+};
+
 /**
  * \brief TODO
  */
@@ -24,8 +30,5 @@ public:
     UMatterShapingComponent() = default;
     ~UMatterShapingComponent() override = default;
 
-    void ShapeMatter(FMatterShapingRequest const& shapingRequest);
-
-private:
-
+    void ShapeMatter(FMatterShapingRequest const& shapingRequest, EShapingOperation operation);
 };

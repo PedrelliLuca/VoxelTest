@@ -14,9 +14,6 @@
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
-//////////////////////////////////////////////////////////////////////////
-// AVoxelTestCharacter
-
 AVoxelTestCharacter::AVoxelTestCharacter() {
     // Set size for collision capsule
     GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -55,38 +52,6 @@ AVoxelTestCharacter::AVoxelTestCharacter() {
     // are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
-void AVoxelTestCharacter::DrawCube(FInputActionValue const& Value) {
-    FCollisionQueryParams RV_TraceParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), true, this);
-    RV_TraceParams.bTraceComplex = true;
-    RV_TraceParams.bReturnPhysicalMaterial = false;
-
-    // Re-initialize hit info
-    FHitResult RV_Hit(ForceInit);
-
-    // call GetWorld() from within an actor extending class
-    FVector const startRay{FollowCamera->GetComponentLocation()};
-    FVector const endRay{startRay + FollowCamera->GetForwardVector() * 3000.};
-    GetWorld()->LineTraceSingleByChannel(RV_Hit, // result
-        startRay,                                // start
-        endRay,                                  // end
-        ECC_Pawn,                                // collision channel
-        RV_TraceParams);
-
-    DrawDebugLine(GetWorld(), startRay, endRay, FColor::Red, false, 5.);
-    _matterShapingComponent->ShapeMatter({RV_Hit.ImpactPoint, 200., RV_Hit.GetActor()});
-}
-
-void AVoxelTestCharacter::BeginPlay() {
-    // Call the base class
-    Super::BeginPlay();
-
-    _matterShapingComponent = FindComponentByClass<UMatterShapingComponent>();
-    check(_matterShapingComponent.IsValid());
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Input
-
 void AVoxelTestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
     // Add Input Mapping Context
     if (APlayerController* PlayerController = Cast<APlayerController>(GetController())) {
@@ -108,8 +73,11 @@ void AVoxelTestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
         // Looking
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AVoxelTestCharacter::Look);
 
-        // Draw
-        EnhancedInputComponent->BindAction(DrawAction, ETriggerEvent::Triggered, this, &AVoxelTestCharacter::DrawCube);
+        // DrawAdd
+        EnhancedInputComponent->BindAction(DrawAddAction, ETriggerEvent::Triggered, this, &AVoxelTestCharacter::_addCube);
+
+        // DrawRemove
+        EnhancedInputComponent->BindAction(DrawRemoveAction, ETriggerEvent::Triggered, this, &AVoxelTestCharacter::_removeCube);
     } else {
         UE_LOG(LogTemplateCharacter, Error,
             TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy "
@@ -148,4 +116,46 @@ void AVoxelTestCharacter::Look(FInputActionValue const& Value) {
         AddControllerYawInput(LookAxisVector.X);
         AddControllerPitchInput(LookAxisVector.Y);
     }
+}
+
+void AVoxelTestCharacter::BeginPlay() {
+    // Call the base class
+    Super::BeginPlay();
+
+    _matterShapingComponent = FindComponentByClass<UMatterShapingComponent>();
+    check(_matterShapingComponent.IsValid());
+}
+
+void AVoxelTestCharacter::_addCube(FInputActionValue const& value) {
+    auto shapingRequest = FMatterShapingRequest();
+    _shapingRequestFromCameraLineTrace(shapingRequest);
+    _matterShapingComponent->ShapeMatter(shapingRequest, EShapingOperation::Add);
+}
+
+void AVoxelTestCharacter::_removeCube(FInputActionValue const& value) {
+    auto shapingRequest = FMatterShapingRequest();
+    _shapingRequestFromCameraLineTrace(shapingRequest);
+    _matterShapingComponent->ShapeMatter(shapingRequest, EShapingOperation::Remove);
+}
+
+void AVoxelTestCharacter::_shapingRequestFromCameraLineTrace(FMatterShapingRequest& outShapingRequest) const {
+    FCollisionQueryParams queryParams = FCollisionQueryParams(FName(TEXT("RV_Trace")), true, this);
+    queryParams.bTraceComplex = true;
+    queryParams.bReturnPhysicalMaterial = false;
+
+    // Re-initialize hit info
+    auto hitResult = FHitResult(ForceInit);
+
+    // call GetWorld() from within an actor extending class
+    auto const startRay = FVector(FollowCamera->GetComponentLocation());
+    auto const endRay = FVector(startRay + FollowCamera->GetForwardVector() * 3000.f);
+    GetWorld()->LineTraceSingleByChannel(hitResult, // result
+        startRay,                                // start
+        endRay,                                  // end
+        ECC_Pawn,                                // collision channel
+        queryParams);
+
+    DrawDebugLine(GetWorld(), startRay, endRay, FColor::Red, false, 5.f);
+
+    outShapingRequest = FMatterShapingRequest(hitResult.ImpactPoint, 200.f, hitResult.GetActor());
 }

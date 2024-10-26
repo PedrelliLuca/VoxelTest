@@ -58,7 +58,7 @@ FVoxelIntBox MakeVoxelIntBox(TObjectPtr<AVoxelWorld> const& voxelW, FVector cons
 }
 } // namespace VoxelUtilities
 
-void UMatterShapingComponent::ShapeMatter(FMatterShapingRequest const& shapingRequest) {
+void UMatterShapingComponent::ShapeMatter(FMatterShapingRequest const& shapingRequest, EShapingOperation const operation) {
     TObjectPtr<AVoxelWorld> const& voxelWorld = Cast<AVoxelWorld>(shapingRequest.MatterActor);
     if (!voxelWorld) {
         return;
@@ -78,7 +78,14 @@ void UMatterShapingComponent::ShapeMatter(FMatterShapingRequest const& shapingRe
 
         // bMultiThreaded = true, bRecordModifiedValues = true
         auto data = TVoxelDataImpl<FModifiedVoxelValue>(worldData, true, true);
-        FVoxelBoxToolsImpl::AddBox(data, shapeBound);
+
+        switch (operation) {
+            case EShapingOperation::Add:
+                FVoxelBoxToolsImpl::AddBox(data, shapeBound);
+                break;
+            case EShapingOperation::Remove:
+                FVoxelBoxToolsImpl::RemoveBox(data, shapeBound);
+        }
 
         // bUpdateRender = true
         FVoxelToolHelpers::UpdateWorld(voxelWorld, shapeBound);

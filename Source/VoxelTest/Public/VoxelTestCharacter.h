@@ -7,12 +7,13 @@
 #include "Logging/LogMacros.h"
 #include "VoxelTestCharacter.generated.h"
 
-class USpringArmComponent;
-class UCameraComponent;
-class UInputMappingContext;
-class UInputAction;
 struct FInputActionValue;
+struct FMatterShapingRequest;
+class UCameraComponent;
+class UInputAction;
+class UInputMappingContext;
 class UMatterShapingComponent;
+class USpringArmComponent;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -20,7 +21,32 @@ UCLASS(config = Game)
 class AVoxelTestCharacter : public ACharacter {
     GENERATED_BODY()
 
+public:
+    AVoxelTestCharacter();
+
+    /** Returns CameraBoom subobject **/
+    FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+    /** Returns FollowCamera subobject **/
+    FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+protected:
+    // APawn interface
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+    /** Called for movement input */
+    void Move(FInputActionValue const& Value);
+
+    /** Called for looking input */
+    void Look(FInputActionValue const& Value);
+
+    // To add mapping context
+    virtual void BeginPlay();
+
 private:
+    void _addCube(FInputActionValue const& value);
+    void _removeCube(FInputActionValue const& value);
+    void _shapingRequestFromCameraLineTrace(FMatterShapingRequest& outShapingRequest) const;
+
     /** Camera boom positioning the camera behind the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
     USpringArmComponent* CameraBoom;
@@ -35,44 +61,22 @@ private:
 
     /** Jump Input Action */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    UInputAction* JumpAction;
+    TObjectPtr<UInputAction> JumpAction;
 
     /** Move Input Action */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    UInputAction* MoveAction;
+    TObjectPtr<UInputAction> MoveAction;
 
     /** Look Input Action */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    UInputAction* LookAction;
+    TObjectPtr<UInputAction> LookAction;
 
     /** Look Input Action */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    UInputAction* DrawAction;
+    TObjectPtr<UInputAction> DrawAddAction;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<UInputAction> DrawRemoveAction;
 
     TWeakObjectPtr<UMatterShapingComponent> _matterShapingComponent{};
-
-public:
-    AVoxelTestCharacter();
-
-    void DrawCube(FInputActionValue const& Value);
-
-protected:
-    /** Called for movement input */
-    void Move(FInputActionValue const& Value);
-
-    /** Called for looking input */
-    void Look(FInputActionValue const& Value);
-
-protected:
-    // APawn interface
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-    // To add mapping context
-    virtual void BeginPlay();
-
-public:
-    /** Returns CameraBoom subobject **/
-    FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-    /** Returns FollowCamera subobject **/
-    FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
